@@ -82,7 +82,7 @@ export default function TopBar({
           <span>在线</span>
         </div>
 
-        {/* Bell - Reservation */}
+        {/* Bell - Reservation (open to everyone) */}
         <button
           onClick={onOpenReservation}
           className="w-8 h-8 rounded-lg flex items-center justify-center transition-all border hover:scale-105 active:scale-95"

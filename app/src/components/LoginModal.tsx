@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, Lock, LogIn, AlertCircle } from 'lucide-react';
+import { X, User, Lock, LogIn, AlertCircle, Shield, LogOut, CheckCircle2 } from 'lucide-react';
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onLoginSuccess: () => void;
+  onLogout: () => void;
+  isAdmin: boolean;
   showPrompt?: boolean;
 }
 
-export default function LoginModal({ isOpen, onClose, onLoginSuccess, showPrompt }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose, onLoginSuccess, onLogout, isAdmin, showPrompt }: LoginModalProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -32,6 +34,11 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, showPrompt
   const handleClose = () => {
     onClose();
     setError('');
+  };
+
+  const handleLogoutClick = () => {
+    onLogout();
+    handleClose();
   };
 
   return (
@@ -58,7 +65,9 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, showPrompt
               className="relative px-6 py-5 flex items-center justify-center border-b"
               style={{ backgroundColor: '#9FB8AA', borderColor: 'rgba(0,0,0,0.06)' }}
             >
-              <h2 className="text-lg font-bold" style={{ color: '#2d3748' }}>管理员登录</h2>
+              <h2 className="text-lg font-bold" style={{ color: '#2d3748' }}>
+                {isAdmin ? '管理员信息' : '管理员登录'}
+              </h2>
               <button
                 onClick={handleClose}
                 className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center transition-all"
@@ -68,131 +77,178 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess, showPrompt
               </button>
             </div>
 
-            {/* Prompt message */}
-            {showPrompt && (
-              <div
-                className="mx-6 mt-4 p-3 rounded-lg flex items-center gap-2 text-xs"
-                style={{ backgroundColor: '#fef3c7', color: '#78350f', border: '1px solid #fbbf24' }}
-              >
-                <AlertCircle size={14} />
-                <span>该功能需要管理员权限，请先登录</span>
-              </div>
-            )}
-
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              {/* Error message */}
-              {error && (
+            {/* Content */}
+            {isAdmin ? (
+              /* ── Logged in state ── */
+              <div className="p-6 space-y-4">
                 <div
-                  className="p-3 rounded-lg flex items-center gap-2 text-xs"
-                  style={{ backgroundColor: '#fee2e2', color: '#7f1d1d', border: '1px solid #f87171' }}
+                  className="flex items-center gap-4 p-4 rounded-xl border"
+                  style={{ backgroundColor: '#d1fae5', borderColor: '#6ee7b7' }}
                 >
-                  <AlertCircle size={14} />
-                  <span>{error}</span>
-                </div>
-              )}
-
-              {/* Username */}
-              <div>
-                <label className="text-xs font-semibold mb-1.5 block" style={{ color: '#4a5568' }}>
-                  用户名
-                </label>
-                <div className="relative">
-                  <User
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2"
-                    size={16}
-                    style={{ color: '#718096' }}
-                  />
-                  <input
-                    type="text"
-                    placeholder="请输入用户名"
-                    value={username}
-                    onChange={e => setUsername(e.target.value)}
-                    className="w-full rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none transition-all"
-                    style={{
-                      backgroundColor: '#f7f8fa',
-                      color: '#2d3748',
-                      border: error ? '1px solid #f87171' : '1px solid rgba(0,0,0,0.08)',
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Password */}
-              <div>
-                <label className="text-xs font-semibold mb-1.5 block" style={{ color: '#4a5568' }}>
-                  密码
-                </label>
-                <div className="relative">
-                  <Lock
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2"
-                    size={16}
-                    style={{ color: '#718096' }}
-                  />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="请输入密码"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    className="w-full rounded-lg pl-10 pr-20 py-2.5 text-sm focus:outline-none transition-all"
-                    style={{
-                      backgroundColor: '#f7f8fa',
-                      color: '#2d3748',
-                      border: error ? '1px solid #f87171' : '1px solid rgba(0,0,0,0.08)',
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium"
-                    style={{ color: '#718096' }}
+                  <div
+                    className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: '#10b981' }}
                   >
-                    {showPassword ? '隐藏' : '显示'}
-                  </button>
+                    <Shield size={24} color="#fff" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold" style={{ color: '#065f46' }}>管理员已登录</p>
+                    <p className="text-xs mt-0.5" style={{ color: '#059669' }}>账号：sblyh</p>
+                  </div>
+                  <CheckCircle2 size={20} style={{ color: '#059669', marginLeft: 'auto' }} />
                 </div>
-              </div>
 
-              {/* Remember me */}
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="w-3.5 h-3.5 rounded accent-emerald-600"
-                  />
-                  <span className="text-xs" style={{ color: '#4a5568' }}>记住我</span>
-                </label>
-                <button type="button" className="text-xs font-medium" style={{ color: '#059669' }}>
-                  忘记密码？
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 p-3 rounded-lg" style={{ backgroundColor: '#f7f8fa' }}>
+                    <CheckCircle2 size={14} style={{ color: '#10b981' }} />
+                    <span className="text-xs" style={{ color: '#4a5568' }}>可修改车位状态（停车/释放）</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 rounded-lg" style={{ backgroundColor: '#f7f8fa' }}>
+                    <CheckCircle2 size={14} style={{ color: '#a855f7' }} />
+                    <span className="text-xs" style={{ color: '#4a5568' }}>可设置禁用/VIP车位</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 rounded-lg" style={{ backgroundColor: '#f7f8fa' }}>
+                    <CheckCircle2 size={14} style={{ color: '#f59e0b' }} />
+                    <span className="text-xs" style={{ color: '#4a5568' }}>可使用车位预约功能</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleLogoutClick}
+                  className="w-full py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all border"
+                  style={{ backgroundColor: '#fee2e2', color: '#dc2626', borderColor: '#fca5a5' }}
+                >
+                  <LogOut size={16} />
+                  退出登录
                 </button>
               </div>
+            ) : (
+              /* ── Login form ── */
+              <>
+                {/* Prompt message */}
+                {showPrompt && (
+                  <div
+                    className="mx-6 mt-4 p-3 rounded-lg flex items-center gap-2 text-xs"
+                    style={{ backgroundColor: '#fef3c7', color: '#78350f', border: '1px solid #fbbf24' }}
+                  >
+                    <AlertCircle size={14} />
+                    <span>该功能需要管理员权限，请先登录</span>
+                  </div>
+                )}
 
-              {/* Submit */}
-              <button
-                type="submit"
-                className="w-full py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all"
-                style={{ backgroundColor: '#5A6460', color: '#fff' }}
-              >
-                <LogIn size={16} />
-                登录
-              </button>
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                  {/* Error message */}
+                  {error && (
+                    <div
+                      className="p-3 rounded-lg flex items-center gap-2 text-xs"
+                      style={{ backgroundColor: '#fee2e2', color: '#7f1d1d', border: '1px solid #f87171' }}
+                    >
+                      <AlertCircle size={14} />
+                      <span>{error}</span>
+                    </div>
+                  )}
 
-              {/* Divider */}
-              <div className="flex items-center gap-3 py-1">
-                <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(0,0,0,0.08)' }} />
-                <span className="text-xs" style={{ color: '#a0aec0' }}>或</span>
-                <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(0,0,0,0.08)' }} />
-              </div>
+                  {/* Username */}
+                  <div>
+                    <label className="text-xs font-semibold mb-1.5 block" style={{ color: '#4a5568' }}>
+                      用户名
+                    </label>
+                    <div className="relative">
+                      <User
+                        className="absolute left-3.5 top-1/2 -translate-y-1/2"
+                        size={16}
+                        style={{ color: '#718096' }}
+                      />
+                      <input
+                        type="text"
+                        placeholder="请输入用户名"
+                        value={username}
+                        onChange={e => setUsername(e.target.value)}
+                        className="w-full rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none transition-all"
+                        style={{
+                          backgroundColor: '#f7f8fa',
+                          color: '#2d3748',
+                          border: error ? '1px solid #f87171' : '1px solid rgba(0,0,0,0.08)',
+                        }}
+                      />
+                    </div>
+                  </div>
 
-              {/* Guest login */}
-              <button
-                type="button"
-                onClick={handleClose}
-                className="w-full py-2 rounded-lg text-xs font-semibold transition-all border"
-                style={{ backgroundColor: 'transparent', color: '#4a5568', borderColor: 'rgba(0,0,0,0.1)' }}
-              >
-                以访客身份继续使用
-              </button>
-            </form>
+                  {/* Password */}
+                  <div>
+                    <label className="text-xs font-semibold mb-1.5 block" style={{ color: '#4a5568' }}>
+                      密码
+                    </label>
+                    <div className="relative">
+                      <Lock
+                        className="absolute left-3.5 top-1/2 -translate-y-1/2"
+                        size={16}
+                        style={{ color: '#718096' }}
+                      />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="请输入密码"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        className="w-full rounded-lg pl-10 pr-16 py-2.5 text-sm focus:outline-none transition-all"
+                        style={{
+                          backgroundColor: '#f7f8fa',
+                          color: '#2d3748',
+                          border: error ? '1px solid #f87171' : '1px solid rgba(0,0,0,0.08)',
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowPassword(!showPassword); }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 rounded text-xs font-semibold cursor-pointer hover:bg-black/5 transition-colors z-10"
+                        style={{ color: '#059669' }}
+                      >
+                        {showPassword ? '隐藏' : '显示'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Remember me */}
+                  <div className="flex items-center">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="w-3.5 h-3.5 rounded accent-emerald-600"
+                      />
+                      <span className="text-xs" style={{ color: '#4a5568' }}>记住我</span>
+                    </label>
+                  </div>
+
+                  {/* Submit */}
+                  <button
+                    type="submit"
+                    className="w-full py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all"
+                    style={{ backgroundColor: '#5A6460', color: '#fff' }}
+                  >
+                    <LogIn size={16} />
+                    登录
+                  </button>
+
+                  {/* Divider */}
+                  <div className="flex items-center gap-3 py-1">
+                    <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(0,0,0,0.08)' }} />
+                    <span className="text-xs" style={{ color: '#a0aec0' }}>或</span>
+                    <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(0,0,0,0.08)' }} />
+                  </div>
+
+                  {/* Guest login */}
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                    className="w-full py-2 rounded-lg text-xs font-semibold transition-all border"
+                    style={{ backgroundColor: 'transparent', color: '#4a5568', borderColor: 'rgba(0,0,0,0.1)' }}
+                  >
+                    以访客身份继续使用
+                  </button>
+                </form>
+              </>
+            )}
           </motion.div>
         </motion.div>
       )}

@@ -7,6 +7,7 @@ import ParkingMap from '@/components/ParkingMap';
 import SpotDetail from '@/components/SpotDetail';
 import ReservationPanel from '@/components/ReservationPanel';
 import LoginModal from '@/components/LoginModal';
+import ManagementPanel from '@/components/ManagementPanel';
 import './App.css';
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
     reserveSpot,
     simulateRealtimeUpdates,
     ZONE_COLORS,
+    currentFloorSpots,
   } = useParkingData();
 
   // Admin auth state
@@ -38,6 +40,7 @@ function App() {
   // Panel / Modal states
   const [showReservation, setShowReservation] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [showManagement, setShowManagement] = useState(false);
 
   const floorOptions = floors.map(f => ({ id: f.id, name: f.name }));
 
@@ -60,8 +63,8 @@ function App() {
     if (isAdmin) {
       action();
     } else {
-      setShowLogin(true);
       setShowLoginPrompt(true);
+      setShowLogin(true);
     }
   };
 
@@ -78,8 +81,7 @@ function App() {
         filterStatus={filterStatus}
         onFilterChange={setFilterStatus}
         isAdmin={isAdmin}
-        onLoginClick={() => setShowLogin(true)}
-        onLogout={handleLogout}
+        onOpenManagement={() => setShowManagement(true)}
       />
 
       {/* Main Content */}
@@ -89,7 +91,7 @@ function App() {
           onRefresh={simulateRealtimeUpdates}
           occupancyRate={stats.occupancyRate}
           isAdmin={isAdmin}
-          onOpenReservation={() => requireAdmin(() => setShowReservation(true))}
+          onOpenReservation={() => setShowReservation(true)}
           onOpenLogin={() => setShowLogin(true)}
         />
 
@@ -115,7 +117,7 @@ function App() {
         </div>
       </div>
 
-      {/* Spot Detail Modal */}
+      {/* Spot Detail Modal - admin required for modify */}
       <SpotDetail
         spot={selectedSpot}
         onClose={handleCloseDetail}
@@ -126,22 +128,32 @@ function App() {
         onLoginClick={() => setShowLogin(true)}
       />
 
-      {/* Reservation Panel (slides from right) */}
+      {/* Reservation Panel - open to everyone */}
       <ReservationPanel
         isOpen={showReservation}
         onClose={() => setShowReservation(false)}
         availableSpots={availableSpots}
         onReserve={(id, plate, hours) => reserveSpot(id, plate, hours)}
         zoneColors={ZONE_COLORS}
-        isAdmin={isAdmin}
       />
 
-      {/* Login Modal */}
+      {/* Login Modal - shows login form or logged-in status */}
       <LoginModal
         isOpen={showLogin}
         onClose={() => setShowLogin(false)}
         onLoginSuccess={handleLoginSuccess}
+        onLogout={handleLogout}
+        isAdmin={isAdmin}
         showPrompt={showLoginPrompt}
+      />
+
+      {/* Management Panel - admin only */}
+      <ManagementPanel
+        isOpen={showManagement}
+        onClose={() => setShowManagement(false)}
+        spots={currentFloorSpots}
+        zoneColors={ZONE_COLORS}
+        onSetStatus={(id, status) => setSpotStatus(id, status)}
       />
     </div>
   );

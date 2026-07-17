@@ -11,8 +11,6 @@ import {
   Search,
   Filter,
   Shield,
-  LogIn,
-  LogOut,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -25,8 +23,7 @@ interface SidebarProps {
   filterStatus: string;
   onFilterChange: (f: string) => void;
   isAdmin: boolean;
-  onLoginClick: () => void;
-  onLogout: () => void;
+  onOpenManagement: () => void;
 }
 
 const STATUS_OPTIONS = [
@@ -48,8 +45,7 @@ export default function Sidebar({
   filterStatus,
   onFilterChange,
   isAdmin,
-  onLoginClick,
-  onLogout,
+  onOpenManagement,
 }: SidebarProps) {
   return (
     <div className="w-72 flex flex-col h-full" style={{ backgroundColor: '#5A6460' }}>
@@ -192,34 +188,19 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* Admin Status / Login */}
-      <div className="p-4 border-t border-white/10">
-        {isAdmin ? (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Shield size={14} style={{ color: '#34d399' }} />
-              <span className="text-xs font-semibold" style={{ color: '#34d399' }}>管理员已登录</span>
-            </div>
-            <button
-              onClick={onLogout}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all border"
-              style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.5)', borderColor: 'rgba(255,255,255,0.1)' }}
-            >
-              <LogOut size={12} />
-              退出
-            </button>
-          </div>
-        ) : (
+      {/* Admin: Management Space Entry */}
+      {isAdmin && (
+        <div className="p-4 border-t border-white/10">
           <button
-            onClick={onLoginClick}
+            onClick={onOpenManagement}
             className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all border"
-            style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', borderColor: 'rgba(255,255,255,0.12)' }}
+            style={{ backgroundColor: 'rgba(5,150,105,0.15)', color: '#34d399', borderColor: 'rgba(52,211,153,0.25)' }}
           >
-            <LogIn size={14} />
-            管理员登录
+            <Shield size={14} />
+            进入管理空间
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Footer */}
       <div className="p-3 border-t border-white/10">
